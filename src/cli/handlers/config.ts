@@ -1,4 +1,4 @@
-import { pathExists, readJSON, writeJSON } from 'fs-extra';
+import { pathExists, readJSON, writeJSON, ensureFile } from 'fs-extra';
 import inq = require('inquirer');
 import { resolve } from 'path';
 import { mkdir } from 'shelljs';
@@ -7,6 +7,7 @@ import { initDirs } from '../../lib/tools';
 
 export default async function () {
   await initDirs();
+  await ensureFile(paths.settings);
   const setting = await readJSON(paths.settings, { throws: false }) || {};
 
   // prompting target folder

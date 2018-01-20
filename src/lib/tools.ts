@@ -1,9 +1,10 @@
 import * as assert from 'assert';
 import { createHash } from 'crypto';
-import { emptyDir, ensureDir, ensureFile, readFile, readJSON, writeJSON } from 'fs-extra';
+import { emptyDir, ensureDir, ensureFile, readdir, readFile, readJSON, writeJSON } from 'fs-extra';
+import { resolve } from 'path';
 import { paths } from '../config';
 
-export async function filter<T> (items: T[], pred: (item: T) => Promise<boolean> | boolean) {
+export async function filter<T>(items: T[], pred: (item: T) => Promise<boolean> | boolean) {
   const res: T[] = [];
   await Promise.all(items.map(async item => {
     if (await pred(item)) {
@@ -36,10 +37,17 @@ interface ISetting {
 export async function loadHistory (): Promise<IHistory> {
   await ensureFile(paths.history);
   const json = await readJSON(paths.history, { throws: false }) || {};
-  // TODO: re-calculate hashes if hashSet is empty
+
   return {
-    hashSet: new Set(json.hashSet || [])
+    hashSet: new Set(json.hashSet || await calculateHash())
   };
+}
+
+async function calculateHash (): Promise<string[]> {
+  const { dest } = await loadSetting();
+
+  const files = (await readdir(dest)).map(file => resolve(dest, file));
+  return Promise.all(files.map(path => sha1(path)));
 }
 
 export async function storeHistory (history: IHistory): Promise<void> {
