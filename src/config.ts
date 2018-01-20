@@ -8,5 +8,6 @@ export const paths = {
   temp: resolve(home, 'temp'),
   daemon: resolve(home, 'daemon'),
   settings: resolve(home, 'settings.json'),
-  history: resolve(home, 'history.json')
+  history: resolve(home, 'history.json'),
+  pjson: resolve(__dirname, '../package.json')
 };
