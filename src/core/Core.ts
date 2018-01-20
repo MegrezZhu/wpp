@@ -1,21 +1,29 @@
-import { emptyDir, ensureDir, ensureFile, readJSON, writeJSON } from 'fs-extra';
+import * as assert from 'assert';
+import { emptyDir, ensureDir, ensureFile, move, readJSON, writeJSON, unlink } from 'fs-extra';
+import { basename, resolve } from 'path';
 import { paths } from '../config';
 import logger from '../lib/logger';
+import { filter, sha1 } from '../lib/tools';
 import { BaseProvider, IWallpaper } from './Base';
 
+import './globalErrorHandling';
+
 interface IHistory {
-  lastUpdate: Date;
   hashSet: Set<string>;
 }
 
-export default class Core {
-  private history: IHistory;
+interface ISetting {
+  dest: string;
+}
 
+export default class Core {
   public registProvider (...providers: BaseProvider[]) {
     for (const provider of providers) {
       provider.run();
 
-      provider.on(BaseProvider.NewWallpapers, this.onNewWallpaper.bind(this));
+      provider.on(BaseProvider.NewWallpapers, wallpapers => {
+        this.onNewWallpaper(wallpapers, provider.name);
+      });
     }
   }
 
@@ -27,32 +35,52 @@ export default class Core {
       ensureFile(paths.history),
       ensureFile(paths.settings)
     ]);
-
-    this.history = await this.loadHistory();
   }
 
   private async loadHistory (): Promise<IHistory> {
     const json = await readJSON(paths.history, { throws: false });
     return {
-      lastUpdate: new Date(json && json.lastUpdate || 0),
-      hashSet: new Set(json && json.lastUpdate || [])
+      hashSet: new Set(json && json.hashSet || [])
     };
   }
 
-  private async storeHistory (): Promise<void> {
+  private async storeHistory (history: IHistory): Promise<void> {
     await writeJSON(
       paths.history,
-      {
-        lastUpdate: this.history.lastUpdate.valueOf(),
-        hashSet: [...this.history.hashSet.values()]
-      },
-      {
-        spaces: 2
-      }
+      { hashSet: [...history.hashSet.values()] },
+      { spaces: 2 }
     );
   }
 
-  private async onNewWallpaper (wallpapers: IWallpaper[]) {
-    logger.debug(`${wallpapers.length} wallpapers emitted`);
+  private async loadSetting (): Promise<ISetting> {
+    const json = await readJSON(paths.settings, { throws: false });
+    return json || {};
+  }
+
+  private async onNewWallpaper (wallpapers: IWallpaper[], providerName: string) {
+    const setting = await this.loadSetting();
+    const history = await this.loadHistory();
+
+    const newWallpaper = await filter(wallpapers, async wallpaper => {
+      // check duplicated
+      const hash = await sha1(wallpaper.path);
+      if (history.hashSet.has(hash)) {
+        return false;
+      }
+      history.hashSet.add(hash);
+      return true;
+    });
+
+    // move to dest
+    assert(setting.dest, 'destination path not specified yet.');
+    await Promise.all(newWallpaper.map(wallpaper => move(wallpaper.path, resolve(setting.dest, basename(wallpaper.path)))));
+
+    // remove duplicate wallpapers
+    await Promise.all(wallpapers.map(wpp => unlink(wpp.path)));
+
+    // history writeback
+    await this.storeHistory(history);
+
+    logger.info(`${providerName} - ${newWallpaper.length} new wallpaper(s).`);
   }
 }

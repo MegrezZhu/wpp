@@ -1,6 +1,7 @@
 import idGen = require('crypto-random-string');
 import { EventEmitter } from 'events';
 import moment = require('moment');
+import { resolve } from 'path';
 import { paths } from '../config';
 import logger from '../lib/logger';
 import { timeout } from '../lib/tools';
@@ -14,10 +15,8 @@ export abstract class BaseProvider extends EventEmitter {
   public static readonly NewWallpapers = 'NewWallpapers';
   public static readonly TempDir = paths.temp;
 
-  protected readonly name: string;
+  public readonly name: string;
   protected readonly interval: number;
-
-  private tempWallpapers: IWallpaper[] = [];
 
   protected constructor (name: string, interval: number) {
     super();
@@ -32,7 +31,9 @@ export abstract class BaseProvider extends EventEmitter {
     while (true) {
       try {
         const res = await this.provide();
-        // TODO: check: all files are placed in temp dir
+        if (!this.pathCheck(res)) {
+          logger.warn('all provided files should be placed in temp dir.');
+        }
         this.emit(BaseProvider.NewWallpapers, res);
       } finally {
         await timeout(this.interval);
@@ -40,16 +41,12 @@ export abstract class BaseProvider extends EventEmitter {
     }
   }
 
-  public async clearTempFiles (): Promise<void> {
-    try {
-      // TODO:
-    } catch (err) {
-      logger.error(err);
-    }
-  }
-
   protected genFilename (date: Date): string {
     const dateStr = moment(date).format('YYYY-MM-DD');
     return `${dateStr}_${idGen(16)}.jpg`;
+  }
+
+  private pathCheck (wpps: IWallpaper[]): boolean {
+    return wpps.every(wpp => resolve(wpp.path, '..') === BaseProvider.TempDir);
   }
 }

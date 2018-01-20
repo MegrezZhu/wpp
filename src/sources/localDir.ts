@@ -6,7 +6,7 @@ import { BaseProvider, IWallpaper } from '../core/Base';
 import { filter } from '../lib/tools';
 
 export class LocalDirProvider extends BaseProvider {
-  protected name: string;
+  public name: string;
 
   public constructor (private dirPath: string, interval: number, name?: string) {
     super(name || 'LocalDirProvider', interval);
