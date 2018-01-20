@@ -1,12 +1,9 @@
-import * as fs from 'fs-extra';
 import { resolve } from 'path';
 import winston = require('winston');
 import 'winston-daily-rotate-file';
-import { serverRoot } from '../config';
+import { paths } from '../config';
 
 const isDev = process.env.NODE_ENV !== 'production';
-
-fs.ensureDirSync(resolve(serverRoot, './logs/'));
 
 function formatter (options: { message?: string; level: string; meta?: any }) {
   const now = new Date();
@@ -18,13 +15,13 @@ function formatter (options: { message?: string; level: string; meta?: any }) {
 const transports = [
   new winston.transports.File({
     name: 'error-log',
-    filename: resolve(serverRoot, './logs/error.log'),
+    filename: resolve(paths.logs, './error.log'),
     level: 'error',
     json: false,
     formatter
   }),
   new winston.transports.DailyRotateFile({
-    filename: resolve(serverRoot, './logs/log'),
+    filename: resolve(paths.logs, './log'),
     datePattern: 'yyyy-MM-dd.',
     prepend: true,
     level: 'info',
