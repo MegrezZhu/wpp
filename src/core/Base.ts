@@ -30,15 +30,19 @@ export abstract class BaseProvider extends EventEmitter {
   public async run (): Promise<never> {
     while (true) {
       try {
-        const res = await this.provide();
-        if (!this.pathCheck(res)) {
-          logger.warn('all provided files should be placed in temp dir.');
-        }
-        this.emit(BaseProvider.NewWallpapers, res);
+        this.runOnce();
       } finally {
         await timeout(this.interval);
       }
     }
+  }
+
+  public async runOnce (): Promise<void> {
+    const res = await this.provide();
+    if (!this.pathCheck(res)) {
+      logger.warn('all provided files should be placed in temp dir.');
+    }
+    this.emit(BaseProvider.NewWallpapers, res);
   }
 
   protected genFilename (date: Date): string {

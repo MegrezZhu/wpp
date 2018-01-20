@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { emptyDir, ensureDir, ensureFile, move, readJSON, writeJSON, unlink } from 'fs-extra';
+import { emptyDir, ensureDir, ensureFile, move, readJSON, unlink, writeJSON } from 'fs-extra';
 import { basename, resolve } from 'path';
 import { paths } from '../config';
 import logger from '../lib/logger';
@@ -17,10 +17,21 @@ interface ISetting {
 }
 
 export default class Core {
+  private providers: BaseProvider[] = [];
+
+  public run () {
+    for (const provider of this.providers) {
+      provider.run();
+    }
+  }
+
+  public async runOnce (): Promise<void> {
+    await Promise.all(this.providers.map(provider => provider.runOnce()));
+  }
+
   public registProvider (...providers: BaseProvider[]) {
     for (const provider of providers) {
-      provider.run();
-
+      this.providers.push(provider);
       provider.on(BaseProvider.NewWallpapers, wallpapers => {
         this.onNewWallpaper(wallpapers, provider.name);
       });
