@@ -1,3 +1,4 @@
+import moment = require('moment');
 import { resolve } from 'path';
 import winston = require('winston');
 import 'winston-daily-rotate-file';
@@ -6,8 +7,7 @@ import { paths } from '../config';
 const isDev = process.env.NODE_ENV !== 'production';
 
 function formatter (options: { message?: string; level: string; meta?: any }) {
-  const now = new Date();
-  const timestamp = `[${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}]`;
+  const timestamp = `[${moment().format('YYYY-MM-DD hh:mm:ss')}]`;
   const format = `${timestamp} ${options.level.toUpperCase()}: ${options.message ? options.message : ''} ${options.meta && Object.keys(options.meta).length ? 'META: ' + JSON.stringify(options.meta) : ''}`;
   return format;
 }

@@ -15,6 +15,7 @@ export default class Core {
     for (const provider of this.providers) {
       provider.run();
     }
+    logger.info(`wpp started.`);
   }
 
   public async runOnce (): Promise<void> {

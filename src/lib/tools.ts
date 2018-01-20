@@ -34,10 +34,11 @@ interface ISetting {
 }
 
 export async function loadHistory (): Promise<IHistory> {
-  const json = await readJSON(paths.history, { throws: false });
+  await ensureFile(paths.history);
+  const json = await readJSON(paths.history, { throws: false }) || {};
   // TODO: re-calculate hashes if hashSet is empty
   return {
-    hashSet: new Set(json && json.hashSet || [])
+    hashSet: new Set(json.hashSet || [])
   };
 }
 
@@ -50,6 +51,7 @@ export async function storeHistory (history: IHistory): Promise<void> {
 }
 
 export async function loadSetting (): Promise<ISetting> {
+  await ensureFile(paths.settings);
   const json = await readJSON(paths.settings, { throws: false }) || {};
   assert(json.dest, 'warn: settings not detected, complete configuration first');
   return json;
@@ -63,8 +65,6 @@ export async function initDirs (): Promise<void> {
   await Promise.all([
     ensureDir(paths.home),
     ensureDir(paths.logs),
-    emptyDir(paths.temp),
-    ensureFile(paths.history),
-    ensureFile(paths.settings)
+    emptyDir(paths.temp)
   ]);
 }

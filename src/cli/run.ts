@@ -18,6 +18,16 @@ program
   .action(handlers.config);
 
 program
+  .command('update')
+  .description('check and update wallpapers')
+  .action(handlers.update);
+
+program
+  .command('run')
+  .description('continuously run')
+  .action(handlers.run);
+
+program
   .command('install')
   .description('install wpp as a windows service')
   .action(handlers.install);
@@ -26,11 +36,6 @@ program
   .command('uninstall')
   .description('uninstall wpp service')
   .action(handlers.uninstall);
-
-program
-  .command('update')
-  .description('check and update wallpapers')
-  .action(handlers.update);
 
 program
   .command('open')
