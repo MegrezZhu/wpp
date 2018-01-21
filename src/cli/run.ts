@@ -47,4 +47,9 @@ program
   .description('list today\'s logs')
   .action(handlers.log);
 
+program
+  .command('clear')
+  .description('clear history and settings')
+  .action(handlers.clear);
+
 program.parse(process.argv);

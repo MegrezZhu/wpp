@@ -3,3 +3,5 @@ declare module 'crypto-random-string' {
 
   export = generate;
 }
+
+declare module 'node-windows';

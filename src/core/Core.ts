@@ -1,7 +1,6 @@
 import * as assert from 'assert';
-import { emptyDir, ensureDir, ensureFile, move, remove, unlink } from 'fs-extra';
+import { move, remove } from 'fs-extra';
 import { basename, resolve } from 'path';
-import { paths } from '../config';
 import logger from '../lib/logger';
 import { filter, loadHistory, loadSetting, sha1, storeHistory } from '../lib/tools';
 import { BaseProvider, IWallpaper } from './Base';

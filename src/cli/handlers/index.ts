@@ -5,3 +5,4 @@ export { default as update } from './update';
 export { default as open } from './open';
 export { default as log } from './log';
 export { default as run } from './run';
+export { default as clear } from './clear';
