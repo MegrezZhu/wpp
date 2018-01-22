@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// TODO: auto retry ?
-export default axios.create({
+export const ax = axios.create({
   timeout: 3000
 });

@@ -4,7 +4,7 @@ import { emptyDir, ensureDir, ensureFile, readdir, readFile, readJSON, writeJSON
 import { resolve } from 'path';
 import { paths } from '../config';
 
-export async function filter<T>(items: T[], pred: (item: T) => Promise<boolean> | boolean) {
+export async function filter<T> (items: T[], pred: (item: T) => Promise<boolean> | boolean) {
   const res: T[] = [];
   await Promise.all(items.map(async item => {
     if (await pred(item)) {
@@ -46,6 +46,7 @@ export async function loadHistory (): Promise<IHistory> {
 async function calculateHash (): Promise<string[]> {
   const { dest } = await loadSetting();
 
+  // FIXME: check whether file is a dir
   const files = (await readdir(dest)).map(file => resolve(dest, file));
   return Promise.all(files.map(path => sha1(path)));
 }

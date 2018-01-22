@@ -25,7 +25,7 @@ export class LocalDirProvider extends BaseProvider {
     return await Promise.all(images.map(async wallpaper => {
       const state = await stat(wallpaper.path);
       wallpaper.date = state.mtime;
-      const newPath = resolve(BaseProvider.TempDir, this.genFilename(wallpaper.date));
+      const newPath = this.genTempFilepath(wallpaper.date);
       await copy(wallpaper.path, newPath);
       wallpaper.path = newPath;
       return wallpaper;
