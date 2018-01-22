@@ -1,8 +1,9 @@
-import { copy, readdir, stat } from 'fs-extra';
+import { copy, pathExists, readdir, stat } from 'fs-extra';
 import sizeOf = require('image-size');
 import { resolve } from 'path';
 import { promisify } from 'util';
 import { BaseProvider, IProviderConfig, IWallpaper } from '../core/Base';
+import logger from '../lib/logger';
 import { filter } from '../lib/tools';
 
 export interface ILocalProviderConfig extends IProviderConfig {
@@ -19,6 +20,11 @@ export class LocalFileProvider extends BaseProvider {
   }
 
   public async provide (): Promise<IWallpaper[]> {
+    if (!await pathExists(this.dirPath)) {
+      logger.warn(`${this.name} - path not exists.`);
+      return [];
+    }
+
     // FIXME: whatif there is a subdir?
     const files = (await readdir(this.dirPath)).map(file => {
       return {

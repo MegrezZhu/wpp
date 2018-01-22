@@ -1,3 +1,4 @@
+import { normalize } from 'path';
 import { BaseProvider } from './core/Base';
 import { LocalFileProvider } from './core/LocalFileProvider';
 import { RemoteFileProvider } from './core/RemoteFileProvider';
@@ -18,6 +19,12 @@ export const providers: IProviders = {
       const { images }: { images: Array<{ urlbase: string }> } = data;
       return images.map(o => `${o.urlbase}_1920x1080.jpg`);
     }
+  }),
+
+  WindowsSpotlight: new LocalFileProvider({
+    name: 'WindowsSpotlight',
+    interval: Every.Ten.Minute,
+    dirPath: normalize(`${process.env.localappdata}/Packages/Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy/LocalState/Assets`)
   }),
 
   Unsplash: new RemoteFileProvider({

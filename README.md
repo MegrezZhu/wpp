@@ -8,6 +8,7 @@ wpp is an easy-to-use & extendable tool to fetch and aggregate wallpaper from di
 
 * Unsplash
 * Bing Wallpaper
+* Windows Spotlight
 
 ## Requirement
 
