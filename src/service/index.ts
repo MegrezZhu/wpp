@@ -9,6 +9,7 @@ const serviceConfig = {
   script: resolve(paths.dist, 'service/runner.js'),
   env: [
     { name: 'USERPROFILE', value: process.env.USERPROFILE },
+    { name: 'localappdata', value: process.env.localappdata },
     { name: 'NODE_ENV', value: 'production' }
   ]
 };
