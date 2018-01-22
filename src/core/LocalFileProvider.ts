@@ -14,6 +14,8 @@ export class LocalFileProvider extends BaseProvider {
 
   public constructor (config: ILocalProviderConfig) {
     super(config);
+
+    this.dirPath = config.dirPath;
   }
 
   public async provide (): Promise<IWallpaper[]> {

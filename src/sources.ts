@@ -11,7 +11,7 @@ export const providers: IProviders = {
   Bing: new RemoteFileProvider({
     name: 'Bing',
     interval: Every.Half.Hour,
-    baseURL: 'https://www.bings.com/',
+    baseURL: 'https://www.bing.com/',
     genURL: async (): Promise<string[]> => {
       const { data } = await ax.get('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=500');
       const { images }: { images: Array<{ urlbase: string }> } = data;
