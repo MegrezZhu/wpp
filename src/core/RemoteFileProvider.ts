@@ -1,22 +1,33 @@
 import { createWriteStream } from 'fs-extra';
-import { BaseProvider, IWallpaper } from '../core/Base';
+import { BaseProvider, IProviderConfig, IWallpaper } from '../core/Base';
 import { ax } from '../lib/axios';
 
-export class BingProvider extends BaseProvider {
-  public constructor (interval: number) {
-    super('Bing', interval);
+type URLGenerator = () => Promise<string[]> | string[];
+
+export interface IRemoteProviderConfig extends IProviderConfig {
+  baseURL: string;
+  genURL: URLGenerator;
+}
+
+export class RemoteFileProvider extends BaseProvider {
+  private genURL: URLGenerator;
+  private baseURL: string;
+
+  public constructor (config: IRemoteProviderConfig) {
+    super(config);
+
+    this.baseURL = config.baseURL;
+    this.genURL = config.genURL;
   }
 
   public async provide (): Promise<IWallpaper[]> {
-    const { data } = await ax.get('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=500');
-    const { images }: { images: Array<{ urlbase: string }> } = data;
-    const urls = images.map(o => o.urlbase);
+    const urls = await this.genURL();
 
     // download images
     const wpps = await Promise.all(
       urls.map(async (url: string): Promise<IWallpaper> => {
-        const res = await ax.get(`${url}_1920x1080.jpg`, {
-          baseURL: 'https://www.bing.com/',
+        const res = await ax.get(url, {
+          baseURL: this.baseURL,
           responseType: 'stream'
         });
 

@@ -1,6 +1,5 @@
 import Core from '../core/Core';
-import { LocalDirProvider } from '../sources/localDir';
-import Every from './Every';
+import { providers } from '../sources';
 import { loadSetting } from './tools';
 
 export function createCore (): Core {
@@ -8,7 +7,10 @@ export function createCore (): Core {
 
   const core = new Core();
 
-  // TODO: regist providers according to settings
+  for (const [name, provider] of Object.entries(providers)) {
+    // TODO: regist providers according to settings
+    core.registProvider(provider);
+  }
 
   return core;
 }

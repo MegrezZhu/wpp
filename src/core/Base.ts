@@ -11,6 +11,11 @@ export interface IWallpaper {
   date: Date;
 }
 
+export interface IProviderConfig {
+  name: string;
+  interval: number;
+}
+
 export abstract class BaseProvider extends EventEmitter {
   public static readonly NewWallpapers = 'NewWallpapers';
   public static readonly TempDir = paths.temp;
@@ -18,11 +23,11 @@ export abstract class BaseProvider extends EventEmitter {
   public readonly name: string;
   protected readonly interval: number;
 
-  protected constructor (name: string, interval: number) {
+  protected constructor (config: IProviderConfig) {
     super();
 
-    this.name = name;
-    this.interval = interval;
+    this.name = config.name;
+    this.interval = config.interval;
   }
 
   public abstract async provide (): Promise<IWallpaper[]>;

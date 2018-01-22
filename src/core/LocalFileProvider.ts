@@ -2,15 +2,22 @@ import { copy, readdir, stat } from 'fs-extra';
 import sizeOf = require('image-size');
 import { resolve } from 'path';
 import { promisify } from 'util';
-import { BaseProvider, IWallpaper } from '../core/Base';
+import { BaseProvider, IProviderConfig, IWallpaper } from '../core/Base';
 import { filter } from '../lib/tools';
 
-export class LocalDirProvider extends BaseProvider {
-  public constructor (private dirPath: string, interval: number, name?: string) {
-    super(name || 'LocalDirProvider', interval);
+export interface ILocalProviderConfig extends IProviderConfig {
+  dirPath: string;
+}
+
+export class LocalFileProvider extends BaseProvider {
+  private dirPath: string;
+
+  public constructor (config: ILocalProviderConfig) {
+    super(config);
   }
 
   public async provide (): Promise<IWallpaper[]> {
+    // FIXME: whatif there is a subdir?
     const files = (await readdir(this.dirPath)).map(file => {
       return {
         path: resolve(this.dirPath, file)
