@@ -12,7 +12,9 @@ export default class Core {
 
   public run () {
     for (const provider of this.providers) {
-      provider.run();
+      provider.run().then(() => {
+        logger.warn(`${provider.name} unexpectedly exited.`);
+      });
     }
     logger.info(`wpp started.`);
   }

@@ -29,7 +29,7 @@ program
 
 program
   .command('install')
-  .description('install wpp as a windows service')
+  .description('install wpp as a Windows service')
   .action(handlers.install);
 
 program

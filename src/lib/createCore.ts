@@ -2,12 +2,12 @@ import Core from '../core/Core';
 import { providers } from '../sources';
 import { loadSetting } from './tools';
 
-export function createCore (): Core {
-  const setting = loadSetting();
+export async function createCore (): Promise<Core> {
+  await loadSetting();
 
   const core = new Core();
 
-  for (const [name, provider] of Object.entries(providers)) {
+  for (const provider of Object.values(providers)) {
     // TODO: regist providers according to settings
     core.registProvider(provider);
   }
