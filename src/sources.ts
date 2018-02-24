@@ -25,14 +25,20 @@ export const providers: IProviders = {
     name: 'WindowsSpotlight',
     interval: Every.Ten.Minute,
     dirPath: normalize(`${process.env.localappdata}/Packages/Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy/LocalState/Assets`)
-  }),
-
-  Unsplash: new RemoteFileProvider({
-    name: 'Unsplash',
-    interval: Every.Half.Day,
-    baseURL: '',
-    genURL: (): string[] => {
-      return ['https://source.unsplash.com/1920x1080?wallpaper'];
-    }
   })
+
+  // Unsplash: new RemoteFileProvider({
+  //   name: 'Unsplash',
+  //   interval: Every.Half.Day,
+  //   baseURL: '',
+  //   genURL: (): string[] => {
+  //     return ['https://source.unsplash.com/1920x1080?wallpaper'];
+  //   }
+  // }),
+
+  // WindowsSpotlightLocal: new LocalFileProvider({
+  //   name: 'DynamicTheme',
+  //   interval: Every.Ten.Minute,
+  //   dirPath: 'C:\\Users\\i4908\\Pictures\\Windows Spotlight Images'
+  // })
 };

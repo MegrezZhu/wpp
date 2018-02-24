@@ -33,8 +33,13 @@ export class LocalFileProvider extends BaseProvider {
     });
 
     const images = await filter(files, async file => {
-      const { height, width } = await (promisify(sizeOf) as any)(file.path);
-      return height && width; // is image
+      try {
+        const { height, width } = await (promisify(sizeOf) as any)(file.path);
+        return height && width && width >= 1920; // is image
+      } catch (err) {
+        // unsupported file type
+        return false;
+      }
     });
 
     return await Promise.all(images.map(async wallpaper => {
